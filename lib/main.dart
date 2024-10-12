@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'question.dart';
+import 'quiz_brain.dart';
+
+Quiz_brain quizBrain = Quiz_brain();
 
 void main() => runApp(Quizzler());
 
@@ -28,28 +30,21 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
 
-  // Correct list initialization using constructor with correct parameter names
-  List<Question> questionBank = [
-    Question(
-        questionText: 'You can lead a cow down stairs but not up stairs.',
-        questionAnswer: false),
-    Question(
-        questionText:
-            'Approximately one quarter of human bones are in the feet.',
-        questionAnswer: true),
-    Question(questionText: 'A slug\'s blood is green.', questionAnswer: true),
-  ];
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer();
 
-  int questionNumber = 0;
+    if (userPickedAnswer == correctAnswer) {
+      print('User got it right!');
+      // You could also add an icon for correct answers
+      scoreKeeper.add(Icon(Icons.check, color: Colors.green));
+    } else {
+      print('User got it wrong!');
+      // Add an icon for incorrect answers
+      scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+    }
 
-  void nextQuestion() {
     setState(() {
-      // Make sure questionNumber does not exceed the number of questions
-      if (questionNumber < questionBank.length - 1) {
-        questionNumber++;
-      } else {
-        questionNumber = 0; // Reset to the first question
-      }
+      quizBrain.nextQuestion();
     });
   }
 
@@ -65,7 +60,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questionBank[questionNumber].questionText,
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -80,7 +75,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(15.0),
             child: TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Colors.green, // Button background color
+                backgroundColor: Colors.green,
               ),
               child: Text(
                 'True',
@@ -90,14 +85,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correct = questionBank[questionNumber].questionAnswer;
-                if (correct == true) {
-                  print('User got it right'); // Correct print statement
-                } else {
-                  print('User got it wrong'); // Correct print statement
-                }
-
-                nextQuestion(); // Proceed to the next question
+                checkAnswer(true);
               },
             ),
           ),
@@ -107,7 +95,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(15.0),
             child: TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Colors.red, // Button background color
+                backgroundColor: Colors.red,
               ),
               child: Text(
                 'False',
@@ -117,19 +105,14 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correct = questionBank[questionNumber].questionAnswer;
-                if (correct == false) {
-                  print('User got it right'); // Correct print statement
-                } else {
-                  print('User got it wrong'); // Correct print statement
-                }
-
-                nextQuestion(); // Proceed to the next question
+                checkAnswer(false);
               },
             ),
           ),
         ),
-        Row(children: scoreKeeper),
+        Row(
+          children: scoreKeeper,
+        ),
       ],
     );
   }
